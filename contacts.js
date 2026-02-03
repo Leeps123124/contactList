@@ -19,44 +19,85 @@ function saveCont() {
     localStorage.setItem(key, JSON.stringify(contacts)); // сохраняем что бы не писать каждый раз одно и тоже
 }
 
-// все дальше работа с кнопками (сейчас консоль)
+function normPh(ph) { 
+    return ph.replace(/\D/g, "");
+}
 
-function addCont(name, phone, vacnacy) { 
+function vldPhn(phL) {
+    return phL.length >= 7 && phL.length <= 15;
+}
 
-    const deleteName = name.trim();
-    const deletePhone = phone.trim();
-    const deleteVanacy = vacnacy.trim();
+function vldNm(nm) { 
+    return /^[A-Za-zА-Яа-яЁё\s-]{2,40}$/.test(nm);
+}
 
-    if (deleteName === "") { 
-        console.log("Error: name out")
-        return;
+function vldVc(vc) { 
+    return vc.length >= 2 && vc.length <= 50;
+}
+
+
+
+
+// все дальше работа с кнопками уже рендерится 
+
+function addCont(name, phone, vacnacy) {
+
+    const clName = name.trim();
+    const clPhone = phone.trim();
+    const clVacancy = vacnacy.trim();
+
+// пустые если 
+
+    if (clName === "") { 
+        return false;
     }
-    if (deletePhone === "") { 
-        console.log("Error: phone out")
-        return;
+    if (clPhone === "") { 
+        return false;
+    } 
+    if (clVacancy === "") { 
+        return false;
     }
-    if (deleteVanacy === "") { 
-        console.log("Error: vacancy out")
-        return;
+
+// валидация имя/работа
+
+    if (!vldNm(clName)) { 
+        return false;
     }
+
+    if (!vldVc(clVacancy)) { 
+        return false;
+    }
+
+const phPlusNm = normPh(clPhone); // ток цифры 
+    if (!vldPhn(phPlusNm)) { 
+        return false;
+} 
+
+const ex = contacts.some((e) => e.phPlusNm === phPlusNm) 
+    if (ex) { 
+        return false;
+    }
+
+
 
 
 
     const newCont = { 
-         id: Date.now(),
-        name: deleteName,
-        phone: deletePhone,
-        vacnacy: deleteVanacy
+        id: Date.now(),
+        name: clName,
+        phone: clPhone,
+        vacnacy: clVacancy,
+        phPlusNm: phPlusNm
     };
 
     contacts.push(newCont);
-
     saveCont();
 }
 
     function clearAll(){
         contacts = [];
         saveCont();
+        return true;
     }
     function deleteCont(id) { 
         contacts = contacts.filter((cont) => cont.id !== id);
@@ -69,7 +110,53 @@ function addCont(name, phone, vacnacy) {
     const addBtn = document.querySelector('.btnAdd');
     const clearAllBtn = document.querySelector('.btnDelete');
     const list =  document.querySelector('.list');
+    const alph = document.querySelector('.aplhavit')
     const err = document.querySelector('.err');
+
+
+    const APLHAVITES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+
+    function getAplh(name) { 
+        const a = (name ?? "").trim();
+
+        if (!a) {
+            return "#";
+        }
+        const first = a[0].toUpperCase();
+
+        if (/^[A-Z]$/.test(first)) {
+            return first;
+        }
+        return "#";
+    }
+
+    function getFirstAlph() { 
+        alph.innerHTML = "";
+
+
+        const count = {};
+        for (const a of APLHAVITES) count[a] = 0; 
+        count["#"] = 0;
+
+        for (const c of contacts) {
+            const l = getAplh(c.name);
+            count[l] = (count[l] ?? 0) + 1;
+        }
+
+        return count;
+
+
+
+        
+
+        
+    
+    }
+
+
+
+
 
     function rnd() { 
         list.innerHTML = "";
@@ -82,7 +169,7 @@ function addCont(name, phone, vacnacy) {
         for(const cont of contacts) { 
 
             const item = document.createElement('div');
-            item.textContent = `${cont.name} - ${cont.phone} - ${cont.vacnacy}`;
+            item.textContent = `${cont.name} -  ${cont.vacnacy} - ${cont.phone}`;
 
             const delBtn = document.createElement('button');
             delBtn.textContent = 'Delete';
