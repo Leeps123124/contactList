@@ -92,6 +92,7 @@ const ex = contacts.some((e) => e.phPlusNm === phPlusNm)
 
     contacts.push(newCont);
     saveCont();
+    return true;
 }
 
     function clearAll(){
@@ -132,6 +133,7 @@ const ex = contacts.some((e) => e.phPlusNm === phPlusNm)
     }
 
     function getFirstAlph() { 
+        
         alph.innerHTML = "";
 
 
@@ -143,15 +145,16 @@ const ex = contacts.some((e) => e.phPlusNm === phPlusNm)
             const l = getAplh(c.name);
             count[l] = (count[l] ?? 0) + 1;
         }
+        for (const c of APLHAVITES) { 
+            const btn = document.createElement("button");
+            btn.textContent = `${c} (${count[c]})`;
+            alph.appendChild(btn);
+         }
 
-        return count;
+         const cache = document.createElement("button");
+         cache.textContent = `# (${count["#"]})`;
+         alph.appendChild(cache);
 
-
-
-        
-
-        
-    
     }
 
 
@@ -162,8 +165,8 @@ const ex = contacts.some((e) => e.phPlusNm === phPlusNm)
         list.innerHTML = "";
 
         if ( contacts.length === 0 ) { 
-            list.textContent = 'Sos1 huy =)))';
-            return;
+            list.textContent = 'type some one contact';
+            getFirstAlph();
         }
 
         for(const cont of contacts) { 
@@ -182,7 +185,9 @@ const ex = contacts.some((e) => e.phPlusNm === phPlusNm)
             item.appendChild(delBtn);
             list.appendChild(item);
         }
+        getFirstAlph();
     }
+
 
     addBtn.addEventListener('click', () => {
         err.textContent = "";
@@ -192,20 +197,13 @@ const ex = contacts.some((e) => e.phPlusNm === phPlusNm)
         const vacancy = vacancyInp.value;
 
         const adds = addCont(name, phone, vacancy);
-
-        if ( 
-            adds === false
-        ) { 
-            err.textContent = 'zalupa';
-            return;
-        }
-
-
         nameInp.value = '';
         phoneInp.value = '';
         vacancyInp.value = '';
 
         rnd();
+        return true;
+       
     });
 
     clearAllBtn.addEventListener('click', () => {
@@ -213,6 +211,9 @@ const ex = contacts.some((e) => e.phPlusNm === phPlusNm)
         rnd();
     })
     rnd();
+
+
+
 
 
 
